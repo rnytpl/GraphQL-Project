@@ -1,6 +1,3 @@
-// Importing projects & clients data objects from sampledData.js
-import { projects, clients } from "../sampleData.js";
-
 // Mongoose models
 import { Project } from "../models/Project.js";
 import { Client } from "../models/Client.js";
@@ -11,10 +8,11 @@ import {
   GraphQLString,
   GraphQLSchema,
   GraphQLList,
+  GraphQLNonNull,
+  GraphQLEnumType,
 } from "graphql";
 
 // Project Type
-//
 const ProjectType = new GraphQLObjectType({
   name: "Project",
   fields: () => ({
@@ -24,7 +22,6 @@ const ProjectType = new GraphQLObjectType({
     description: { type: GraphQLString },
     status: { type: GraphQLString },
     // Access ClientType Schema
-    // Iterate through clients object and find the client with the same id as the project's clientId
     client: {
       type: ClientType,
       // parent refers to the object returned from the ProjectType
@@ -36,7 +33,6 @@ const ProjectType = new GraphQLObjectType({
 });
 
 // Client Type
-//
 const ClientType = new GraphQLObjectType({
   name: "Client",
   fields: () => ({
@@ -46,6 +42,8 @@ const ClientType = new GraphQLObjectType({
     phone: { type: GraphQLString },
   }),
 });
+
+// Queries
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
@@ -83,6 +81,127 @@ const RootQuery = new GraphQLObjectType({
   },
 });
 
+// Mutations
+
+const mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    addClient: {
+      type: ClientType,
+      args: {
+        name: { type: GraphQLNonNull(GraphQLString) },
+        email: { type: GraphQLNonNull(GraphQLString) },
+        phone: { type: GraphQLNonNull(GraphQLString) },
+      },
+      resolve(parent, args) {
+        let client = new Client({
+          name: args.name,
+          email: args.email,
+          phone: args.phone,
+        });
+        return client.save();
+      },
+    },
+    updateClient: {
+      type: ClientType,
+      args: {
+        id: { type: GraphQLNonNull(GraphQLID) },
+        name: { type: GraphQLString },
+        email: { type: GraphQLString },
+        phone: { type: GraphQLString },
+      },
+      resolve(parent, args) {
+        return Client.findByIdAndUpdate(
+          args.id,
+          {
+            name: args.name,
+            email: args.email,
+            phone: args.phone,
+          },
+          { new: true }
+        );
+      },
+    },
+    deleteClient: {
+      type: ClientType,
+      args: {
+        id: { type: GraphQLNonNull(GraphQLID) },
+      },
+      resolve(parent, args) {
+        return Client.findByIdAndDelete(args.id);
+      },
+    },
+    addProject: {
+      type: ProjectType,
+      args: {
+        name: { type: GraphQLNonNull(GraphQLString) },
+        description: { type: GraphQLNonNull(GraphQLString) },
+        status: {
+          type: new GraphQLEnumType({
+            name: "ProjectStatus",
+            values: {
+              new: { value: "Not Started" },
+              progress: { value: "In Progress" },
+              completed: { value: "Completed" },
+            },
+          }),
+          defaultValue: "Not Started",
+        },
+        clientId: { type: GraphQLNonNull(GraphQLID) },
+      },
+      resolve(parent, args) {
+        let project = new Project({
+          name: args.name,
+          clientId: args.clientId,
+          description: args.description,
+          status: args.status,
+        });
+        return project.save();
+      },
+    },
+    deleteProject: {
+      type: ProjectType,
+      args: {
+        id: { type: GraphQLNonNull(GraphQLID) },
+      },
+      resolve(parent, args) {
+        return Project.findByIdAndDelete(args.id);
+      },
+    },
+    updateProject: {
+      type: ProjectType,
+      args: {
+        id: { type: GraphQLNonNull(GraphQLID) },
+        name: { type: GraphQLString },
+        description: { type: GraphQLString },
+        status: {
+          type: new GraphQLEnumType({
+            name: "ProjectStatusUpdate",
+            values: {
+              new: { value: "Not Started" },
+              progress: { value: "In Progress" },
+              completed: { value: "Completed" },
+            },
+          }),
+        },
+      },
+      // COmplete
+      resolve(parent, args) {
+        return Project.findByIdAndUpdate(
+          args.id,
+          {
+            name: args.name,
+            description: args.description,
+            status: args.status,
+          },
+          { new: true }
+        );
+      },
+    },
+  },
+});
+
 export const schema = new GraphQLSchema({
   query: RootQuery,
+  mutation,
 });
