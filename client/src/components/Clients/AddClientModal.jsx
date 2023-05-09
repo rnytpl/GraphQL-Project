@@ -4,7 +4,7 @@ import { useMutation } from "@apollo/client";
 import { ADD_CLIENT } from "@/mutations/mutationQueries";
 import { GET_CLIENTS } from "@/queries/clientQueries";
 
-const addClientModal = () => {
+const AddClientModal = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -78,7 +78,7 @@ const addClientModal = () => {
                   id="email"
                   onChange={(e) => setEmail(e.target.value)}
                   value={email}
-                  type="text"
+                  type="email"
                   className="form-control"
                 />
                 {/* Phone */}
@@ -105,4 +105,4 @@ const addClientModal = () => {
     </>
   );
 };
-export default addClientModal;
+export default AddClientModal;
