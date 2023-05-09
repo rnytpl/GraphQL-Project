@@ -94,6 +94,7 @@ const mutation = new GraphQLObjectType({
         phone: { type: GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args) {
+        console.log("Adding a new project");
         let client = new Client({
           name: args.name,
           email: args.email,
