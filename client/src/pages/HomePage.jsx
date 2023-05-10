@@ -1,6 +1,5 @@
 import AddClientModal from "@/components/Clients/AddClientModal";
 import AddProjectModal from "@/components/Projects/AddProjectModal";
-
 import Clients from "@/components/Clients/Clients";
 import Projects from "@/components/Projects/Projects";
 

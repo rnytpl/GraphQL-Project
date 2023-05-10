@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { useMutation } from "@apollo/client";
-import { ADD_CLIENT } from "@/mutations/mutationQueries";
+import { ADD_CLIENT } from "@/mutations/clientMutations";
 import { GET_CLIENTS } from "@/queries/clientQueries";
 
 const AddClientModal = () => {
@@ -75,6 +75,7 @@ const AddClientModal = () => {
                 {/* Email */}
                 <label className="form-label">Email:</label>
                 <input
+                  required
                   id="email"
                   onChange={(e) => setEmail(e.target.value)}
                   value={email}

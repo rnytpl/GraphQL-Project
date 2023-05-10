@@ -60,12 +60,14 @@ const RootQuery = new GraphQLObjectType({
         id: { type: GraphQLID },
       },
       resolve(parent, args) {
+        console.log("getprojects");
         return Project.findById(args.id);
       },
     },
     clients: {
       type: new GraphQLList(ClientType),
       resolve(parent, args) {
+        console.log("getclients");
         return Client.find({});
       },
     },
@@ -75,6 +77,7 @@ const RootQuery = new GraphQLObjectType({
         id: { type: GraphQLID },
       },
       resolve(parent, args) {
+        console.log("getclient");
         return Client.findById(args.id);
       },
     },
@@ -129,9 +132,16 @@ const mutation = new GraphQLObjectType({
         id: { type: GraphQLNonNull(GraphQLID) },
       },
       resolve(parent, args) {
-        return Client.findByIdAndDelete(args.id);
+        Project.find({ clientId: args.id }).then((projects) => {
+          projects.forEach((project) => {
+            project.deleteOne();
+          });
+        });
+
+        return Client.findByIdAndRemove(args.id);
       },
     },
+    // Add a project
     addProject: {
       type: ProjectType,
       args: {
@@ -151,15 +161,17 @@ const mutation = new GraphQLObjectType({
         clientId: { type: GraphQLNonNull(GraphQLID) },
       },
       resolve(parent, args) {
-        let project = new Project({
+        const project = new Project({
           name: args.name,
-          clientId: args.clientId,
           description: args.description,
           status: args.status,
+          clientId: args.clientId,
         });
+
         return project.save();
       },
     },
+    // Delete a project
     deleteProject: {
       type: ProjectType,
       args: {
@@ -186,14 +198,15 @@ const mutation = new GraphQLObjectType({
           }),
         },
       },
-      // COmplete
       resolve(parent, args) {
         return Project.findByIdAndUpdate(
           args.id,
           {
-            name: args.name,
-            description: args.description,
-            status: args.status,
+            $set: {
+              name: args.name,
+              description: args.description,
+              status: args.status,
+            },
           },
           { new: true }
         );

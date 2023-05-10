@@ -6,6 +6,7 @@ export const GET_PROJECTS = gql`
       id
       name
       description
+      status
     }
   }
 `;
@@ -16,6 +17,7 @@ export const GET_PROJECT = gql`
       id
       name
       description
+      status
       client {
         id
         name

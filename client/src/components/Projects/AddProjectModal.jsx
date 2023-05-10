@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaList, FaUser } from "react-icons/fa";
 import { useMutation, useQuery } from "@apollo/client";
-import { ADD_PROJECT } from "../../mutations/mutationQueries";
+import { ADD_PROJECT } from "@/mutations/projectMutations";
 import { GET_PROJECTS } from "@/queries/projectQueries";
 import { GET_CLIENTS } from "@/queries/clientQueries";
 import Spinner from "../Spinner";
@@ -13,10 +13,9 @@ const AddProjectModal = () => {
   const [status, setStatus] = useState("new");
 
   const { data, loading, error } = useQuery(GET_CLIENTS);
-  console.log("clientId", clientId);
+
   const [addProject] = useMutation(ADD_PROJECT, {
-    variables: { name, description, status },
-    // refetchQueries: [{ query: GET_PROJECTS }],
+    variables: { name, description, status, clientId },
     update(cache, { data: { addProject } }) {
       const { projects } = cache.readQuery({ query: GET_PROJECTS });
       cache.writeQuery({
@@ -89,9 +88,12 @@ const AddProjectModal = () => {
                   className="form-control"
                 ></textarea>
                 {/* Status */}
-                <label className="form-label">Status:</label>
+                <label htmlFor="status" className="form-label">
+                  Status:
+                </label>
                 <select
                   id="status"
+                  key="status"
                   className="form-select"
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
@@ -100,15 +102,21 @@ const AddProjectModal = () => {
                   <option value="progress">In Progress</option>
                   <option value="completed">Completed</option>
                 </select>
-                <label className="form-label">Client:</label>
+                <label htmlFor="client" className="form-label">
+                  Client:
+                </label>
                 <select
+                  id="client"
+                  key="client"
                   style={{ display: "block", width: "100%" }}
                   className="form-select"
                   onChange={(e) => setClientId(e.target.value)}
                 >
                   {data.clients.map((client) => (
                     <>
-                      <option value={client.id}>{client.name}</option>
+                      <option key={client.id} value={client.id}>
+                        {client.name}
+                      </option>
                     </>
                   ))}
                 </select>

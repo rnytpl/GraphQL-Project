@@ -3,6 +3,8 @@ import { GET_PROJECT } from "@/queries/projectQueries";
 import { useQuery } from "@apollo/client";
 import Spinner from "@/components/Spinner";
 import ClientInfo from "@/components/Clients/ClientInfo";
+import DeleteProjectButton from "@/components/Projects/DeleteProjectButton";
+import EditProjectForm from "@/components/Projects/EditProjectForm";
 
 const Project = () => {
   const { id } = useParams();
@@ -24,8 +26,18 @@ const Project = () => {
           <h5 className="mt-3">
             Project Status: <strong>{data.project.status}</strong>
           </h5>
-          <p className="lead">{data.project.status}</p>
           <ClientInfo client={data.project.client} />
+          <div
+            className="d-flex"
+            style={{
+              marginTop: "2rem",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            <EditProjectForm project={data.project} />
+            <DeleteProjectButton projectId={id} />
+          </div>
         </div>
       )}
     </>

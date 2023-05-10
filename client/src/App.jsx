@@ -3,7 +3,7 @@ import Header from "./components/Header";
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
 import HomePage from "./pages/HomePage";
 import NotFound from "./pages/NotFound";
-import Project from "./pages/Project";
+import Project from "./components/Projects/Project";
 
 const cache = new InMemoryCache({
   typePolicies: {
